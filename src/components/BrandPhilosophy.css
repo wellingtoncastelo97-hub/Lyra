@@ -1,0 +1,33 @@
+.philosophy-section {
+    background-color: var(--color-earth-brown);
+    color: var(--color-ivory);
+    padding: 10rem 0;
+}
+
+.philosophy-text {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    line-height: 1.5;
+    color: var(--color-soft-beige);
+    max-width: 900px;
+    margin: 0 auto 3rem;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.philosophy-author {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-sage);
+}
+
+@media (max-width: 768px) {
+    .philosophy-section {
+        padding: 6rem 0;
+    }
+
+    .philosophy-text {
+        font-size: 1.8rem;
+    }
+}

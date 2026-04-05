@@ -1,0 +1,145 @@
+.about-page {
+    padding-top: 0;
+}
+
+.about-hero {
+    padding: 6rem 0 4rem;
+    background: var(--color-soft-beige);
+}
+
+.about-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+}
+
+.about-hero-subtitle {
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    opacity: 0.85;
+}
+
+.about-story {
+    padding: 5rem 0;
+}
+
+.about-story-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.about-story-grid.reverse {
+    direction: rtl;
+}
+
+.about-story-grid.reverse > * {
+    direction: ltr;
+}
+
+.about-story-content h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.about-story-content p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    opacity: 0.85;
+    margin-bottom: 1rem;
+}
+
+.about-story-image img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.about-values {
+    padding: 5rem 0;
+    background: var(--color-soft-beige);
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.value-card {
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+.value-card svg {
+    color: var(--color-forest);
+    margin-bottom: 1rem;
+}
+
+.value-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+}
+
+.value-card p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+.about-ingredients {
+    padding: 5rem 0;
+}
+
+.ingredients-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+.ingredients-list li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    font-size: 0.95rem;
+}
+
+.ingredients-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--color-forest);
+}
+
+.about-cta {
+    padding: 5rem 0;
+    background: var(--color-earth-brown);
+    color: var(--color-ivory);
+}
+
+.about-cta h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--color-ivory);
+    margin-bottom: 1rem;
+}
+
+.about-cta p {
+    margin-bottom: 2rem;
+    opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+    .about-hero h1 { font-size: 2rem; }
+    .about-story-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .about-story-grid.reverse { direction: ltr; }
+    .values-grid { grid-template-columns: repeat(2, 1fr); }
+}

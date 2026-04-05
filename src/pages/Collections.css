@@ -1,0 +1,136 @@
+.collections-page {
+    padding-top: 0;
+}
+
+.collections-hero {
+    padding: 5rem 0 3rem;
+    background: var(--color-soft-beige);
+}
+
+.collections-hero h1 {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+}
+
+.collections-hero-subtitle {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    opacity: 0.85;
+}
+
+.collections-grid-section {
+    padding: 5rem 0;
+}
+
+.collections-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+.collection-card {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    background: #fff;
+    border: 1px solid var(--color-soft-beige);
+}
+
+.collection-card:hover {
+    transform: translateY(-4px);
+}
+
+.collection-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+.collection-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.collection-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3));
+}
+
+.collection-content {
+    padding: 2rem;
+}
+
+.collection-content h2 {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+}
+
+.collection-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    opacity: 0.85;
+    margin-bottom: 0.75rem;
+}
+
+.collection-products {
+    font-size: 0.85rem;
+    color: var(--color-sage);
+    margin-bottom: 1.5rem;
+}
+
+.collection-btn {
+    width: 100%;
+}
+
+.collections-cta {
+    padding: 5rem 0;
+    background: var(--color-soft-beige);
+}
+
+.collections-cta h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.collections-cta p {
+    margin-bottom: 2rem;
+    opacity: 0.85;
+}
+
+.collections-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .collections-hero h1 {
+        font-size: 2rem;
+    }
+
+    .collections-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .collections-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .collections-cta-buttons button {
+        width: 100%;
+        max-width: 300px;
+    }
+}

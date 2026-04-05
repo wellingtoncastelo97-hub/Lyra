@@ -1,0 +1,22 @@
+.announcement-bar {
+    background-color: var(--color-earth-brown);
+    color: var(--color-ivory);
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: var(--font-body);
+    position: relative;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.announcement-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}

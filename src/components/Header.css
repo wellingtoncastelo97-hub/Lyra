@@ -1,0 +1,136 @@
+.header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: rgba(249, 247, 234, 0.9);
+    /* Ivory with opacity */
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    border-bottom: 1px solid rgba(72, 46, 29, 0.1);
+    /* Earth brown low opacity */
+    transition: all 0.3s ease;
+}
+
+.header-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 1.5rem 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.menu-btn {
+    margin-right: 0.5rem;
+}
+
+.header-nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 400;
+    color: var(--color-earth-brown);
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--color-forest);
+}
+
+.header-logo {
+    flex: 1;
+    text-align: center;
+}
+
+.header-logo a {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    letter-spacing: 0.15em;
+    color: var(--color-earth-brown);
+    text-transform: uppercase;
+}
+
+.header-icons {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.5rem;
+}
+
+.icon-btn {
+    color: var(--color-earth-brown);
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    color: var(--color-forest);
+}
+
+@media (max-width: 992px) {
+    .header-nav {
+        display: none;
+    }
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background-color: var(--color-forest, #2d4a22);
+    color: white;
+    font-size: 0.70rem;
+    font-weight: bold;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.header-search-form {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 0.25rem 0.5rem;
+    animation: searchExpand 0.3s ease-out;
+}
+
+.header-search-form input {
+    border: none;
+    outline: none;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    width: 150px;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+
+@keyframes searchExpand {
+    from {
+        width: 0;
+        opacity: 0;
+    }
+
+    to {
+        width: 150px;
+        opacity: 1;
+    }
+}
