@@ -36,7 +36,6 @@ const validatePhone = (phone) => /^\+?\d{9,15}$/.test(String(phone || '').replac
 
 const CheckoutPaymentCard = ({
   clientSecret,
-  formData,
   totalAmount,
   onError,
 }) => {
@@ -69,17 +68,6 @@ const CheckoutPaymentCard = ({
     try {
       const result = await checkoutState.checkout.confirm({
         redirect: 'always',
-        email: formData.email,
-        phoneNumber: formData.phone,
-        billingAddress: {
-          name: formData.name,
-          address: {
-            country: 'PT',
-            line1: formData.address,
-            city: formData.city,
-            postal_code: formData.postalCode,
-          },
-        },
       });
 
       console.log('[checkout] confirm result:', result);
@@ -498,7 +486,6 @@ const TransparentCheckout = ({
                   <CheckoutPaymentCard
                     clientSecret={checkoutSession.clientSecret}
                     totalAmount={grandTotal}
-                    formData={formData}
                     onError={setErrorMsg}
                   />
                 </CheckoutElementsProvider>
