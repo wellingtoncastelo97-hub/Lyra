@@ -39,7 +39,6 @@ const CheckoutPaymentCard = ({
   formData,
   totalAmount,
   onError,
-  returnUrl,
 }) => {
   const checkoutState = useCheckout();
   const [submitting, setSubmitting] = useState(false);
@@ -70,7 +69,6 @@ const CheckoutPaymentCard = ({
     try {
       const result = await checkoutState.checkout.confirm({
         redirect: 'always',
-        returnUrl,
         email: formData.email,
         phoneNumber: formData.phone,
         billingAddress: {
@@ -502,7 +500,6 @@ const TransparentCheckout = ({
                     totalAmount={grandTotal}
                     formData={formData}
                     onError={setErrorMsg}
-                    returnUrl={checkoutSession.returnUrl}
                   />
                 </CheckoutElementsProvider>
               ) : null}
