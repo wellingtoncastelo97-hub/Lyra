@@ -184,12 +184,29 @@
 
 .conf-total {
     display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eaeaea;
+}
+
+.conf-total-row {
+    display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 1rem;
+    color: #555;
+}
+
+.conf-total-final {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
     font-size: 1.25rem;
     font-weight: 500;
     color: #000;
-    padding-top: 1rem;
 }
 
 .confirmation-actions {

@@ -132,8 +132,8 @@ const OrderConfirmation = () => {
             <p className="order-number-badge">Encomenda #{order.id.split('-')[0]}</p>
             <p>
               {isPaidOrder(order)
-                ? 'Pagamento confirmado com Stripe. A sua encomenda ja esta em processamento.'
-                : 'Recebemos o seu pedido. Estamos a confirmar o pagamento Stripe.'}
+                ? 'Pagamento confirmado. A sua encomenda ja esta em processamento.'
+                : 'Recebemos o seu pedido. Estamos a confirmar o pagamento.'}
             </p>
           </div>
 
@@ -154,15 +154,22 @@ const OrderConfirmation = () => {
               <section className="detail-section">
                 <h3>Metodo de Pagamento</h3>
                 <div className="detail-box">
-                  <p>Stripe</p>
+                  <p>Pagamento online</p>
                   <p className="payment-status">
                     Estado: {isPaidOrder(order) ? 'Pago' : 'A confirmar pagamento'}
                   </p>
-                  {order.stripe_checkout_session_id && (
-                    <p>Sessao Stripe: {order.stripe_checkout_session_id}</p>
-                  )}
+                  {order.shipping_label ? <p>Entrega: {order.shipping_label}</p> : null}
                 </div>
               </section>
+
+              {order.customer_notes && (
+                <section className="detail-section">
+                  <h3>Observacoes</h3>
+                  <div className="detail-box">
+                    <p>{order.customer_notes}</p>
+                  </div>
+                </section>
+              )}
             </div>
 
             <div className="confirmation-items">
@@ -187,6 +194,17 @@ const OrderConfirmation = () => {
               </div>
 
               <div className="conf-total">
+                <div className="conf-total-row">
+                  <span>Subtotal</span>
+                  <span>{Number(order.subtotal_amount || 0).toFixed(2).replace('.', ',')} EUR</span>
+                </div>
+                <div className="conf-total-row">
+                  <span>Portes</span>
+                  <span>{Number(order.shipping_cost || 0).toFixed(2).replace('.', ',')} EUR</span>
+                </div>
+              </div>
+
+              <div className="conf-total conf-total-final">
                 <span>Total Pago</span>
                 <span>{Number(order.total_amount || 0).toFixed(2).replace('.', ',')} EUR</span>
               </div>

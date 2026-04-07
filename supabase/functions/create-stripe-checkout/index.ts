@@ -11,9 +11,17 @@ type ResellerCheckoutPayload = {
 
 type CatalogCheckoutPayload = {
   type: 'catalog_order';
+  uiMode?: 'hosted' | 'custom';
   source?: 'shop' | 'catalog';
   resellerId?: string | null;
   resellerSlug?: string | null;
+  shippingMethod: {
+    id: string;
+    carrier: string;
+    label: string;
+    subtitle?: string;
+    price: number;
+  };
   customer: {
     name: string;
     email: string;
@@ -21,6 +29,7 @@ type CatalogCheckoutPayload = {
     address: string;
     city: string;
     postalCode: string;
+    notes?: string;
   };
   cartItems: Array<{
     productId: string;
@@ -170,6 +179,13 @@ const handleCatalogCheckout = async (
   const baseUrl = getBaseUrl(request);
   const resellerId = await resolveCatalogReseller(supabase, payload.resellerId, payload.resellerSlug);
   const source = payload.source || (resellerId ? 'catalog' : 'shop');
+  const uiMode = payload.uiMode === 'custom' ? 'custom' : 'hosted';
+  const customerNotes = payload.customer.notes?.trim() || null;
+  const shippingPrice = Number(Number(payload.shippingMethod?.price || 0).toFixed(2));
+  const shippingCarrier = payload.shippingMethod?.carrier?.trim() || '';
+  const shippingLabel = payload.shippingMethod?.label?.trim() || '';
+  const shippingSubtitle = payload.shippingMethod?.subtitle?.trim() || '';
+  const shippingSummaryLabel = [shippingCarrier, shippingLabel].filter(Boolean).join(' - ');
 
   if ((payload.source === 'catalog' || payload.resellerId || payload.resellerSlug) && !resellerId) {
     throw new Error('Catalogo de revendedora invalido ou inativo.');
@@ -177,6 +193,10 @@ const handleCatalogCheckout = async (
 
   if (!payload.customer?.email || !payload.customer?.name || !Array.isArray(payload.cartItems) || payload.cartItems.length === 0) {
     throw new Error('Dados do checkout incompletos.');
+  }
+
+  if (!payload.shippingMethod?.id || !shippingCarrier || !shippingLabel || shippingPrice <= 0) {
+    throw new Error('Metodo de entrega invalido.');
   }
 
   const productIds = [...new Set(payload.cartItems.map((item) => item.productId).filter(Boolean))];
@@ -229,9 +249,10 @@ const handleCatalogCheckout = async (
     };
   });
 
-  const orderTotal = Number(
+  const productsSubtotal = Number(
     normalizedItems.reduce((sum, item) => sum + item.total, 0).toFixed(2),
   );
+  const orderTotal = Number((productsSubtotal + shippingPrice).toFixed(2));
 
   const customerAddress = [
     payload.customer.address,
@@ -259,11 +280,15 @@ const handleCatalogCheckout = async (
       customer_id: customer.id,
       reseller_id: resellerId,
       total_amount: orderTotal,
-      subtotal_amount: orderTotal,
+      subtotal_amount: productsSubtotal,
       payment_method: 'stripe',
       payment_gateway: 'stripe',
       payment_status: 'pending',
       status: 'pending',
+      customer_notes: customerNotes,
+      shipping_method: payload.shippingMethod.id,
+      shipping_label: shippingSummaryLabel,
+      shipping_cost: shippingPrice,
     }])
     .select('id')
     .single();
@@ -283,43 +308,92 @@ const handleCatalogCheckout = async (
 
   if (orderItemsError) throw orderItemsError;
 
-  const successBase = `${baseUrl}/order-confirmation/${order.id}?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
-  const successUrl = payload.resellerSlug
-    ? `${successBase}&ref=${encodeURIComponent(payload.resellerSlug)}`
-    : successBase;
+  const confirmationBase = `${baseUrl}/order-confirmation/${order.id}?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
+  const returnUrl = payload.resellerSlug
+    ? `${confirmationBase}&ref=${encodeURIComponent(payload.resellerSlug)}`
+    : confirmationBase;
 
-  const session = await stripeRequest<{ id: string; url: string }>('checkout/sessions', {
-    body: {
-      mode: 'payment',
-      payment_method_types: ['card'],
-      customer_email: payload.customer.email,
-      client_reference_id: order.id,
-      customer_creation: 'always',
-      success_url: successUrl,
-      cancel_url: payload.resellerSlug
-        ? `${baseUrl}/${payload.resellerSlug}/checkout?checkout=cancelled`
-        : `${baseUrl}/checkout?checkout=cancelled`,
-      metadata: {
-        checkout_type: 'catalog_order',
-        order_id: order.id,
-        reseller_id: resellerId || '',
-        reseller_slug: payload.resellerSlug || '',
-        source,
-      },
-      line_items: normalizedItems.map((item) => ({
-        quantity: item.quantity,
-        price_data: {
-          currency: 'eur',
-          unit_amount: Math.round(item.unitPrice * 100),
-          product_data: {
-            name: item.product.name,
-            description: item.product.description?.slice(0, 500) || undefined,
-            images: item.product.image_url ? [item.product.image_url] : undefined,
-          },
-        },
-      })),
+  const cancelUrl = payload.resellerSlug
+    ? `${baseUrl}/${payload.resellerSlug}/checkout?checkout=cancelled`
+    : `${baseUrl}/checkout?checkout=cancelled`;
+
+  const sessionPayload: Record<string, unknown> = {
+    mode: 'payment',
+    payment_method_types: ['mb_way', 'card'],
+    customer_email: payload.customer.email,
+    client_reference_id: order.id,
+    metadata: {
+      checkout_type: 'catalog_order',
+      order_id: order.id,
+      reseller_id: resellerId || '',
+      reseller_slug: payload.resellerSlug || '',
+      source,
+      customer_notes: customerNotes || '',
+      shipping_method: payload.shippingMethod.id,
+      shipping_label: shippingSummaryLabel,
+      shipping_cost: shippingPrice.toFixed(2),
     },
-  });
+    line_items: normalizedItems.map((item) => ({
+      quantity: item.quantity,
+      price_data: {
+        currency: 'eur',
+        unit_amount: Math.round(item.unitPrice * 100),
+        product_data: {
+          name: item.product.name,
+          description: item.product.description?.slice(0, 500) || undefined,
+          images: item.product.image_url ? [item.product.image_url] : undefined,
+        },
+      },
+    })),
+  };
+
+  sessionPayload.line_items = [
+    ...(sessionPayload.line_items as Array<Record<string, unknown>>),
+    {
+      quantity: 1,
+      price_data: {
+        currency: 'eur',
+        unit_amount: Math.round(shippingPrice * 100),
+        product_data: {
+          name: `Entrega - ${shippingSummaryLabel}`,
+          description: shippingSubtitle || undefined,
+        },
+      },
+    },
+  ];
+
+  if (uiMode === 'custom') {
+    sessionPayload.ui_mode = 'custom';
+    sessionPayload.return_url = returnUrl;
+  } else {
+    sessionPayload.success_url = returnUrl;
+    sessionPayload.cancel_url = cancelUrl;
+    sessionPayload.customer_creation = 'always';
+  }
+
+  let session: { id: string; url?: string; client_secret?: string };
+
+  try {
+    session = await stripeRequest<{ id: string; url?: string; client_secret?: string }>('checkout/sessions', {
+      apiVersion: uiMode === 'custom' ? '2025-03-31.basil' : undefined,
+      body: sessionPayload,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : '';
+    const canRetryWithoutMbWay = message.includes('mb_way') || message.includes('payment_method_types');
+
+    if (!canRetryWithoutMbWay) {
+      throw error;
+    }
+
+    sessionPayload.payment_method_types = ['card'];
+    console.warn('MB WAY indisponivel na conta Stripe; retry sem mb_way.');
+
+    session = await stripeRequest<{ id: string; url?: string; client_secret?: string }>('checkout/sessions', {
+      apiVersion: uiMode === 'custom' ? '2025-03-31.basil' : undefined,
+      body: sessionPayload,
+    });
+  }
 
   const { error: stripeSessionError } = await supabase
     .from('orders')
@@ -329,6 +403,19 @@ const handleCatalogCheckout = async (
     .eq('id', order.id);
 
   if (stripeSessionError) throw stripeSessionError;
+
+  if (uiMode === 'custom') {
+    if (!session.client_secret) {
+      throw new Error('A sessao de pagamento nao devolveu client secret.');
+    }
+
+    return jsonResponse({
+      clientSecret: session.client_secret,
+      sessionId: session.id,
+      orderId: order.id,
+      returnUrl,
+    });
+  }
 
   return jsonResponse({
     url: session.url,

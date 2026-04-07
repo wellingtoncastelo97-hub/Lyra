@@ -41,6 +41,7 @@ export const stripeRequest = async <T>(
     method?: 'GET' | 'POST';
     body?: Record<string, unknown>;
     query?: Record<string, string | number | boolean>;
+    apiVersion?: string;
   } = {},
 ): Promise<T> => {
   const method = options.method || 'POST';
@@ -56,6 +57,7 @@ export const stripeRequest = async <T>(
     method,
     headers: {
       Authorization: `Bearer ${getStripeSecretKey()}`,
+      ...(options.apiVersion ? { 'Stripe-Version': options.apiVersion } : {}),
       ...(method !== 'GET' ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}),
     },
     body: method !== 'GET' && options.body ? toStripeFormBody(options.body) : undefined,

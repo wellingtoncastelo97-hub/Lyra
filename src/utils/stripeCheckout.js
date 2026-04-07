@@ -12,11 +12,11 @@ export const createStripeCheckoutSession = async (payload) => {
     });
 
     if (error) {
-        throw normalizeError(error, 'Nao foi possivel iniciar o checkout Stripe.');
+        throw normalizeError(error, 'Nao foi possivel iniciar o pagamento.');
     }
 
-    if (!data?.url) {
-        throw new Error('O checkout Stripe nao devolveu um link valido.');
+    if (!data?.url && !data?.clientSecret) {
+        throw new Error('O checkout nao devolveu dados validos para pagamento.');
     }
 
     return data;
@@ -32,7 +32,7 @@ export const syncStripeCheckoutSession = async (sessionId) => {
     });
 
     if (error) {
-        throw normalizeError(error, 'Nao foi possivel confirmar o estado do pagamento Stripe.');
+        throw normalizeError(error, 'Nao foi possivel confirmar o estado do pagamento.');
     }
 
     return data;
