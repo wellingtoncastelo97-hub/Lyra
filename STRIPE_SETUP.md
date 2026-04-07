@@ -24,7 +24,15 @@ Defina estes secrets no Supabase:
 - `APP_BASE_URL`
 - `STRIPE_RESELLER_PRICE_ID` (opcional, se quiser usar um preco ja criado no Stripe)
 
-## 3. Deploy das funcoes
+## 3. Frontend env
+
+Defina tambem no frontend hospedado:
+
+- `VITE_STRIPE_PUBLISHABLE_KEY`
+
+Se estiver a usar Vercel, esta chave precisa de existir no ambiente de build para o checkout da loja e do catalogo usarem a conta Stripe correta.
+
+## 4. Deploy das funcoes
 
 Funcoes criadas:
 
@@ -40,7 +48,7 @@ supabase functions deploy sync-stripe-checkout
 supabase functions deploy stripe-webhook
 ```
 
-## 4. Webhook Stripe
+## 5. Webhook Stripe
 
 Crie um endpoint Stripe a apontar para:
 
@@ -54,7 +62,7 @@ Eventos recomendados:
 - `checkout.session.async_payment_succeeded`
 - `checkout.session.expired`
 
-## 5. Oferta LYRA
+## 6. Oferta LYRA
 
 Se quiser ter a oferta de 29EUR ja criada no dashboard Stripe, use:
 
@@ -64,7 +72,7 @@ node scripts/create-stripe-offers.mjs
 
 O script devolve `productId` e `priceId`. Se quiser usar esse preco fixo no checkout de revendedora, configure `STRIPE_RESELLER_PRICE_ID`.
 
-## 6. Fluxos ligados
+## 7. Fluxos ligados
 
 - `/pagamento` cria conta pendente e abre checkout Stripe para a revendedora
 - `/checkout` usa Stripe para pedidos da loja

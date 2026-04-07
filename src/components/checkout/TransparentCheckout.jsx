@@ -9,7 +9,6 @@ import {
   Smartphone,
   Truck,
   User,
-  Wallet,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { stripePromise } from '../../utils/stripePublic';
@@ -17,6 +16,10 @@ import { getShippingOptionById, shippingOptions } from './shippingOptions';
 import './TransparentCheckout.css';
 
 const formatPrice = (value) => `${Number(value || 0).toFixed(2).replace('.', ',')} EUR`;
+const advertisedPaymentMethods = [
+  { id: 'mb_way', icon: Smartphone, label: 'MB WAY' },
+  { id: 'card', icon: CreditCard, label: 'Cartao' },
+];
 
 const defaultFormState = {
   name: '',
@@ -108,14 +111,19 @@ const CheckoutPaymentCard = ({
   return (
     <div className="tc-payment-shell">
       <div className="tc-method-row">
-        <span className="tc-method-pill"><Smartphone size={16} /> MB WAY</span>
-        <span className="tc-method-pill"><CreditCard size={16} /> Cartao</span>
-        <span className="tc-method-pill"><Wallet size={16} /> Apple Pay</span>
-        <span className="tc-method-pill"><Wallet size={16} /> Google Pay</span>
+        {advertisedPaymentMethods.map((method) => {
+          const Icon = method.icon;
+
+          return (
+            <span key={method.id} className="tc-method-pill">
+              <Icon size={16} /> {method.label}
+            </span>
+          );
+        })}
       </div>
 
       <p className="tc-method-disclaimer">
-        Os metodos visiveis podem variar conforme o dispositivo, a conta e a disponibilidade no momento do pagamento.
+        Esta loja esta configurada para concluir pedidos com MB WAY e cartao diretamente no checkout Stripe.
       </p>
 
       <div className="tc-payment-inner">
